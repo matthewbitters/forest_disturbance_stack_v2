@@ -6,8 +6,11 @@
 ### matthew.bitters@colorado.edu
 
 
+# Set cyverse working directory
+setwd("/home/jovyan/data-store/forest_disturbance_stack_v2")
+
 # Install and load required packages
-packages <- c("here", "sf", "dplyr", "ggplot2", "tigris", "terra")
+packages <- c("here", "sf", "dplyr", "ggplot2", "tigris", "terra", "httr", "progress")
 installed <- packages %in% installed.packages()[,"Package"]
 if (any(!installed)) {
   install.packages(packages[!installed])
@@ -20,6 +23,8 @@ library(dplyr)
 library(ggplot2)
 library(tigris)
 library(terra)
+library(httr)
+library(progress) 
 
 
 ### Read in data
@@ -72,7 +77,12 @@ nrow(wjdat)
 # 49967 total fires now
 
 # Filter to just western US states
-states_sf <- states(cb = TRUE, resolution = "20m", year = 2020)
+
+# Read in state boundaries
+# states_sf <- states(cb = TRUE, resolution = "20m", year = 2020) # tigris not working in cyverse.
+# Download manually and read in using line below.
+states_sf <- st_read(here("data", "raw", "downloaded-files", "cb_2020_us_state_20m", "cb_2020_us_state_20m.shp"))
+
 states_sf <- st_transform(states_sf, st_crs(wjdat))  # Match CRS
 
 # Filter to western states
@@ -141,15 +151,24 @@ burn_count_raster <- rast(r_template)
 values(burn_count_raster) <- 0  # Initialize with zeros
 
 # Rasterize annual fires 
-for (year in fire_years) {
-  message("Processing year: ", year)
+# Initialize progress bar
+pb <- progress_bar$new(
+  total = length(fire_years),
+  format = "  Processing [:bar] :percent (Year :current/:total - :message)",
+  clear = FALSE,
+  width = 60
+)
+
+for (i in seq_along(fire_years)) {
+  year <- fire_years[i]
+  pb$tick(tokens = list(message = year))
   
   fire_year_vect <- wj_vect[wj_vect$Fire_Year == year, ]
   fire_year_vect$burn_value <- year
   
   fire_raster <- rasterize(fire_year_vect, r_template, field = "burn_value", touches = TRUE)
   
-  # Update most recent fire year
+  # Update latest fire year
   latest_fire_raster <- cover(fire_raster, latest_fire_raster)
   
   # Update burn frequency
@@ -164,4 +183,5 @@ writeRaster(latest_fire_raster, here("data", "derived", "welty-jeffries-raster",
 writeRaster(burn_count_raster, here("data", "derived", "welty-jeffries-raster", "burn_frequency.tif"), overwrite = TRUE)
 
 message("Done! Rasters saved to /data/derived"/"welty-jeffriess-raster/")
+
 
