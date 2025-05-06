@@ -73,7 +73,7 @@ ggplot() +
   geom_sf(data = firedat_west, aes(fill = Fire_Year), color = NA, alpha = 0.7) +
   geom_sf(data = west_sf, fill = NA, color = "black", size = 0.5) +
   scale_fill_viridis_c(option = "magma", trans = "log", name = "Year") +  
-  labs(title = "Burned Areas in the Western US (1999–2020)") +
+  labs(title = "Burned Areas in the Western US (1984–2020)") +
   theme_minimal()
 
 
