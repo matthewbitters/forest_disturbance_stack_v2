@@ -1,7 +1,8 @@
 ### Forest disturbance stack v2
 
 ### This script visualizes Welty & Jeffries fire data from 1984-2020
-### across the Western United States.
+### across the Western United States by creating a gif. Note that this uses
+### 1000m resolution because the 30m resolution raster is too large.
 ### Matt Bitters
 ### matthew.bitters@colorado.edu
 
@@ -22,9 +23,9 @@ library(magick)
 library(dplyr)
 
 # Read raster
-r <- rast(here("data", "derived", "wildfire_id_30.tif"))
+r <- rast(here("data", "derived", "wildfire_id_1000.tif"))
 
-# Read western states shapefile (must match earlier work)
+# Read western states shapefile 
 states_sf <- sf::st_read(here("data", "raw", "downloaded-files", "cb_2020_us_state_20m", "cb_2020_us_state_20m.shp"))
 
 r_crs <- st_crs(r)  # Get the CRS from the raster as an sf object
@@ -80,4 +81,5 @@ for (i in 1:nlyr(r)) {
 
 # Combine into animated gif
 gif <- image_animate(image_join(frames), fps = 1)
-image_write(gif, here("data", "derived", "wildfire_id_30_gif.gif"))
+image_write(gif, here("data", "derived", "wildfire_id_1000_gif.gif"))
+
