@@ -7,7 +7,7 @@
 
 
 # Install the necessary packages if they aren't already installed
-packages <- c("here", "terra", "sf", "ggplot2", "magick")
+packages <- c("here", "terra", "sf", "ggplot2", "magick", "dplyr")
 installed <- packages %in% installed.packages()[,"Package"]
 if (any(!installed)) {
   install.packages(packages[!installed])
@@ -19,6 +19,7 @@ library(terra)
 library(sf)
 library(ggplot2)
 library(magick)
+library(dplyr)
 
 # Read raster
 r <- rast(here("data", "derived", "wildfire_id_30.tif"))
@@ -33,8 +34,9 @@ states_sf <- st_transform(states_sf, crs = r_crs)
 western_states <- c("California", "Oregon", "Washington", "Idaho", "Montana",
                     "Nevada", "Utah", "Arizona", "Colorado", "New Mexico", "Wyoming")
 west_sf <- states_sf %>%
-  st_transform(r_crs)  # Match raster CRS
   filter(NAME %in% western_states) %>%
+  st_transform(r_crs)  # Match raster CRS
+
   
 
 
