@@ -83,7 +83,7 @@ ggplot() +
 # Create template raster
 template_raster <- rast(
   extent = ext(firedat_west),
-  resolution = 1000,  # Adjust as needed
+  resolution = 30,  # Adjust as needed
   crs = st_crs(firedat_west)$wkt
 )
 
@@ -113,9 +113,12 @@ with_progress({
 # Combine rasters into one stack
 fire_stack <- rast(yearly_rasters)
 
+# Check data type for compression when writing
+datatype(fire_stack, bylyr = TRUE)
+
 # Save output raster stack
 output_path <- here("data", "derived", "wildfire_id.tif")
-writeRaster(fire_stack, output_path, overwrite = TRUE)
+writeRaster(fire_stack, output_path, overwrite = TRUE, gdal = c("COMPRESS=DEFLATE"))
 message("Raster stack saved to: ", output_path)
 
 

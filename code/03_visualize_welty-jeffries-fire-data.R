@@ -21,7 +21,7 @@ library(ggplot2)
 library(magick)
 
 # Read raster
-r <- rast(here("data", "derived", "wildfire_id.tif"))
+r <- rast(here("data", "derived", "wildfire_id_30.tif"))
 
 # Read western states shapefile (must match earlier work)
 states_sf <- sf::st_read(here("data", "raw", "downloaded-files", "cb_2020_us_state_20m", "cb_2020_us_state_20m.shp"))
@@ -78,4 +78,4 @@ for (i in 1:nlyr(r)) {
 
 # Combine into animated gif
 gif <- image_animate(image_join(frames), fps = 1)
-image_write(gif, here("data", "derived", "wildfire_id_gif.gif"))
+image_write(gif, here("data", "derived", "wildfire_id_30_gif.gif"))
