@@ -105,7 +105,7 @@ with_progress({
     
     r <- terra::rasterize(vect_year, template_raster, field = "USGS_Assigned_ID", touches = TRUE)
     
-    names(r) <- paste0("fire_", year)
+    names(r) <- paste0("wildfire_id_", year)
     return(r)
   })
 })
@@ -121,5 +121,4 @@ output_path <- here("data", "derived", "wildfire_id.tif")
 writeRaster(fire_stack, output_path, overwrite = TRUE, gdal = c("COMPRESS=DEFLATE"))
 message("Raster stack saved to: ", output_path)
 
-
-
+### Note that writing raster as a .tif file drops "wildfire_id_" in layer name.
