@@ -113,12 +113,29 @@ with_progress({
 # Combine rasters into one stack
 fire_stack <- rast(yearly_rasters)
 
+# Check layer names
+names(fire_stack)
+
+# Manually reset names
+names(fire_stack) <- c("wildfire_id_1984", "wildfire_id_1985", "wildfire_id_1986", "wildfire_id_1987",
+                        "wildfire_id_1988", "wildfire_id_1989", "wildfire_id_1990", "wildfire_id_1991",
+                        "wildfire_id_1992", "wildfire_id_1993", "wildfire_id_1994", "wildfire_id_1995",
+                        "wildfire_id_1996", "wildfire_id_1997", "wildfire_id_1998", "wildfire_id_1999",
+                        "wildfire_id_2000", "wildfire_id_2001", "wildfire_id_2002", "wildfire_id_2003",
+                        "wildfire_id_2004", "wildfire_id_2005", "wildfire_id_2006", "wildfire_id_2007",
+                        "wildfire_id_2008", "wildfire_id_2009", "wildfire_id_2010", "wildfire_id_2011",
+                        "wildfire_id_2012", "wildfire_id_2013", "wildfire_id_2014", "wildfire_id_2015",
+                        "wildfire_id_2016", "wildfire_id_2017", "wildfire_id_2018", "wildfire_id_2019",
+                        "wildfire_id_2020")
+
 # Check data type for compression when writing
 datatype(fire_stack, bylyr = TRUE)
 
 # Save output raster stack
 output_path <- here("data", "derived", "wildfire_id.tif")
-writeRaster(fire_stack, output_path, overwrite = TRUE, gdal = c("COMPRESS=DEFLATE"))
+writeRaster(fire_stack, output_path, datatype = "FLT4S", overwrite = TRUE, gdal = c("COMPRESS=DEFLATE"))
 message("Raster stack saved to: ", output_path)
 
-### Note that writing raster as a .tif file drops "wildfire_id_" in layer name.
+# Load raster stack and check names
+fire_stack_test <- rast(here("data", "derived", "wildfire_id.tif"))
+names(fire_stack_test)
